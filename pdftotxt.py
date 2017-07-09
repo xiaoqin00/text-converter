@@ -7,8 +7,9 @@ from pdfminer.pdfinterp import PDFResourceManager,PDFPageInterpreter
 from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
+from optparse import OptionParser
 #main
-def main(argv) :
+def convert(argv) :
     #输出文件名，这里只处理单文档，所以只用了argv［1］
     outfile = argv[1] + '.txt'
     args = [argv[1]]
