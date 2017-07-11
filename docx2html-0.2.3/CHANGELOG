@@ -1,0 +1,60 @@
+
+Changelog
+=========
+
+* 0.2.3
+    * There was a bug with hyperlinks that had a break tag in them. The
+      document would fail to convert. This issue has been fixed.
+* 0.2.2
+    * There was a bug with hyperlinks that were missing text. The document
+      would fail to convert. This issue has been fixed.
+* 0.2.1
+    * If a list had an inconsistency in the ilvls, the content for the
+      inconsistent ilvl would be lost. Now we roll that inconsistent list into
+      the root, no longer losing the content.
+* 0.2.0
+    * If a list had a numId that was not stored in the numbering dict, then a
+      key error would be thrown. Now if either the numId or the ilvl for a
+      given list tag is invalid it defaults to returning a list type of
+      decimal.
+* 0.1.11
+    * Sometimes in the OOXML an image will have a height or width of 0. If this
+      happens we are now ignoring the height and width in the OOXML and using
+      the full image instead.
+* 0.1.10
+    * Added a user facing version
+* 0.1.9
+    * There was a problem for some lists that would cause missing content if
+      the list id's were not well behaved. This issue has been addressed.
+* 0.1.8
+    * Fixed missing content with hyperlinks with more than one run tag and
+      smartTags.
+    * Certain image types are now being ignored. These include: emf, wmf and
+      svg.
+* 0.1.7
+    * If the indentation level of a set of lists (with the same list id) were
+      mangled (Starting off with a higher indentation level followed by a
+      lower) then the entire sub list (the list with the lower indentation
+      level) would not be added to the root list. This would result in removing
+      the mangled list from the final output. This issue has been addressed.
+* 0.1.6
+    * Header detection was relying on case. However it is possible for a lower
+      case version of headers to show up. Those are now handled correctly.
+* 0.1.4
+    * Added a function to remove tags, in addition stripped 'sectPr' tags since
+      they have to do with headers and footers.
+* 0.1.3
+    * Hyperlinks with no text no longer throw an error
+    * Fixed a bug with determining the font size with an incomplete styles dict
+* 0.1.2
+    * Fixed a bug with determining the font size of a paragraph tag
+* 0.1.1
+    * Added a changelog
+    * Styles are now stripped from hyperlinks
+    * jinja2 is now used to render test xml
+* 0.1.0
+    * Correctly handle tables and paragraphs in lists. Before if there was a
+      table in a list it would break the list into two halves, the half before
+      the table and the half after the table (with the table inbetween them). Now
+      if there is a table or paragraph in a list those elements get rolled into
+      the list.

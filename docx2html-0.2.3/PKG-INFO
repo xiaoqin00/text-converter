@@ -1,0 +1,172 @@
+Metadata-Version: 1.0
+Name: docx2html
+Version: 0.2.3
+Summary: docx (OOXML) to html converter
+Home-page: http://github.com/PolicyStat/docx2html/
+Author: Jason Ward
+Author-email: jason.louard.ward@gmail.com
+License: BSD
+Description: =========
+        docx2html
+        =========
+        
+        Convert a docx (OOXML) file to semantic HTML.
+        All of Word formatting nonsense is stripped away and
+        you're left with a cleanly-formatted version of the content.
+        
+        
+        Usage
+        =====
+        
+            >>> from docx2html import convert
+            >>> html = convert('path/to/docx/file')
+        
+        
+        Running Tests for Development
+        =============================
+        
+        ::
+        
+             $ virtualenv path/to/new/virtualenv
+             $ source path/to/new/virtualenv/bin/activate
+             $ cd path/to/workspace
+             $ git clone git://github.com/PolicyStat/docx2html.git
+             $ cd docx2html
+             $ pip install .
+             $ pip install -r test_requirements.txt
+             $ ./run_tests.sh
+        
+        Description
+        ===========
+        
+        docx2html is designed to take a docx file and extract the content out and
+        convert that content to html. It does not care about styles or fonts or
+        anything that changes how the content is displayed (with few exceptions). Below
+        is a list of what currently works:
+        
+        * Paragraphs
+            * Bold
+            * Italics
+            * Underline
+            * Hyperlinks
+        * Lists
+            * Nested lists
+            * List styles (letters, roman numerals, etc.)
+            * Tables
+            * Paragraphs
+        * Tables
+            * Rowspans
+            * Colspans
+            * Nested tables
+            * Lists
+        * Images
+            * Resizing
+            * Converting to smaller formats (for bitmaps and tiffs)
+            * There is a hook to allow setting the src of the image tag out of context,
+              more on this later
+        * Headings
+            * Simple headings
+            * Root level lists that are upper case roman numerals get converted to h2
+              tags
+        
+        Handling embedded images
+        ------------------------
+        
+        docx2html allows you to specify how you would like to handle image uploading.
+        For example, you might be uploading your images to Amazon S3 eg:
+        Note: This documentation sucks, so you might need to read the source.
+        
+        ::
+        
+            import os.path
+            from shutil import copyfile
+        
+            from docx2html import convert
+        
+            def handle_image(image_id, relationship_dict):
+                image_path = relationship_dict[image_id]
+                # Now do something to the image. Let's move it somewhere.
+                _, filename = os.path.split(image_path)
+                destination_path = os.path.join('/tmp', filename)
+                copyfile(image_path, destination_path)
+        
+                # Return the `src` attribute to be used in the img tag
+                return 'file://%s' % destination
+        
+            html = convert('path/to/docx/file', image_handler=handle_image)
+        
+        Naming Conventions
+        ------------------
+        
+        There are two main naming conventions in the source for docx2html there are
+        *build* functions, which will return an etree element that represents HTML. And
+        there are *get_content* functions which return string representations of HTML.
+        
+        Changelog
+        =========
+        
+        * 0.2.3
+            * There was a bug with hyperlinks that had a break tag in them. The
+              document would fail to convert. This issue has been fixed.
+        * 0.2.2
+            * There was a bug with hyperlinks that were missing text. The document
+              would fail to convert. This issue has been fixed.
+        * 0.2.1
+            * If a list had an inconsistency in the ilvls, the content for the
+              inconsistent ilvl would be lost. Now we roll that inconsistent list into
+              the root, no longer losing the content.
+        * 0.2.0
+            * If a list had a numId that was not stored in the numbering dict, then a
+              key error would be thrown. Now if either the numId or the ilvl for a
+              given list tag is invalid it defaults to returning a list type of
+              decimal.
+        * 0.1.11
+            * Sometimes in the OOXML an image will have a height or width of 0. If this
+              happens we are now ignoring the height and width in the OOXML and using
+              the full image instead.
+        * 0.1.10
+            * Added a user facing version
+        * 0.1.9
+            * There was a problem for some lists that would cause missing content if
+              the list id's were not well behaved. This issue has been addressed.
+        * 0.1.8
+            * Fixed missing content with hyperlinks with more than one run tag and
+              smartTags.
+            * Certain image types are now being ignored. These include: emf, wmf and
+              svg.
+        * 0.1.7
+            * If the indentation level of a set of lists (with the same list id) were
+              mangled (Starting off with a higher indentation level followed by a
+              lower) then the entire sub list (the list with the lower indentation
+              level) would not be added to the root list. This would result in removing
+              the mangled list from the final output. This issue has been addressed.
+        * 0.1.6
+            * Header detection was relying on case. However it is possible for a lower
+              case version of headers to show up. Those are now handled correctly.
+        * 0.1.4
+            * Added a function to remove tags, in addition stripped 'sectPr' tags since
+              they have to do with headers and footers.
+        * 0.1.3
+            * Hyperlinks with no text no longer throw an error
+            * Fixed a bug with determining the font size with an incomplete styles dict
+        * 0.1.2
+            * Fixed a bug with determining the font size of a paragraph tag
+        * 0.1.1
+            * Added a changelog
+            * Styles are now stripped from hyperlinks
+            * jinja2 is now used to render test xml
+        * 0.1.0
+            * Correctly handle tables and paragraphs in lists. Before if there was a
+              table in a list it would break the list into two halves, the half before
+              the table and the half after the table (with the table inbetween them). Now
+              if there is a table or paragraph in a list those elements get rolled into
+              the list.
+        
+Platform: any
+Classifier: Development Status :: 3 - Alpha
+Classifier: Programming Language :: Python
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Text Processing :: Markup :: HTML
+Classifier: Topic :: Text Processing :: Markup :: XML
