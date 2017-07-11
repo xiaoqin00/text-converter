@@ -57,5 +57,4 @@ if __name__ == '__main__':
     parser.add_option('-i','--in',dest='input',help='input file')
     parser.add_option('-o','--out',dest='output',help='output file')
     (options,args)=parser.parse_args()
-    # print options.input
     convert()
